@@ -1,17 +1,12 @@
 from datetime import datetime
-
 from flask_sqlalchemy import SQLAlchemy
 
-# Single shared DB instance for the Ralph service
 db = SQLAlchemy()
 
 
 class Event(db.Model):
     """
     Immutable event log.
-
-    Each row represents a single observed outcome from
-    FutureHub or Help Scout. Events are append-only.
     """
 
     __tablename__ = "events"
@@ -26,6 +21,8 @@ class Event(db.Model):
 
     outcome = db.Column(db.String(64), nullable=False)
 
+    follow_up_count = db.Column(db.Integer, nullable=False, default=0)
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
@@ -36,9 +33,6 @@ class Event(db.Model):
 class ConfidenceCalibration(db.Model):
     """
     Advisory confidence calibration output.
-
-    These records are derived from Event data and are
-    NEVER applied automatically.
     """
 
     __tablename__ = "confidence_calibrations"

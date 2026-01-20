@@ -4,7 +4,9 @@ from ralph.models import ConfidenceCalibration
 from ralph.analytics.intent_coverage import detect_uncovered_intents
 from ralph.analytics.guardrail_validation import detect_missing_guardrails
 from ralph.analytics.decision_log_validation import detect_missing_decisions
+from ralph.analytics.trend_deltas import compute_intent_trend_deltas
 from ralph.analytics.repetition_analysis import analyze_intent_frequency
+from ralph.analytics.draft_outcome_trends import analyze_draft_outcome_trends
 
 
 insights_bp = Blueprint("insights", __name__, url_prefix="/insights")
@@ -20,7 +22,28 @@ def intent_coverage():
     insights = detect_uncovered_intents()
     return jsonify(insights), 200
 
+@insights_bp.route("/draft-outcomes", methods=["GET"])
+def draft_outcome_trends():
+    """
+    Analytics insight:
+    Draft outcome quality trends (follow-ups & resolutions).
+    Trend-only. Advisory. Non-actionable.
+    """
+    insights = analyze_draft_outcome_trends()
+    return jsonify(insights), 200
+
+
 from ralph.analytics.repetition_analysis import analyze_intent_frequency
+
+@insights_bp.route("/trends", methods=["GET"])
+def intent_trend_deltas():
+    """
+    Analytics insight:
+    Show intent frequency deltas between time windows.
+    Descriptive only.
+    """
+    insights = compute_intent_trend_deltas(days=7)
+    return jsonify(insights), 200
 
 
 @insights_bp.route("/repetition", methods=["GET"])
