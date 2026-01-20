@@ -1,0 +1,39 @@
+from flask import Blueprint, jsonify
+
+from ralph.models import ConfidenceCalibration
+from ralph.analytics.intent_coverage import detect_uncovered_intents
+
+insights_bp = Blueprint("insights", __name__, url_prefix="/insights")
+
+
+@insights_bp.route("/intent-coverage", methods=["GET"])
+def intent_coverage():
+    """
+    Governance insight:
+    Detect intents that have events but no confidence calibration.
+    Advisory only.
+    """
+    insights = detect_uncovered_intents()
+    return jsonify(insights), 200
+
+
+@insights_bp.route("/calibrations", methods=["GET"])
+def get_calibrations():
+    """
+    Read-only endpoint returning advisory confidence calibrations.
+    """
+    calibrations = ConfidenceCalibration.query.all()
+
+    return jsonify(
+        [
+            {
+                "intent": c.intent,
+                "recommended_threshold": c.recommended_threshold,
+                "success_rate": c.success_rate,
+                "observation_count": c.observation_count,
+                "actionable": False,
+                "requires_approval": True,
+            }
+            for c in calibrations
+        ]
+    ), 200
