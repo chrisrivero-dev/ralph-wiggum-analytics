@@ -16,6 +16,18 @@ def intent_coverage():
     insights = detect_uncovered_intents()
     return jsonify(insights), 200
 
+from ralph.analytics.guardrail_validation import detect_missing_guardrails
+
+
+@insights_bp.route("/guardrails", methods=["GET"])
+def guardrail_validation():
+    """
+    Governance insight:
+    Detect missing guardrails for active intents.
+    Advisory only.
+    """
+    insights = detect_missing_guardrails()
+    return jsonify(insights), 200
 
 @insights_bp.route("/calibrations", methods=["GET"])
 def get_calibrations():
