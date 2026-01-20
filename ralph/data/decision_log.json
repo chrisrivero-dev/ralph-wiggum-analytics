@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "approved_intents": [
+    {
+      "intent": "shipping_status",
+      "approved_by": "human",
+      "date": "2026-01-21",
+      "notes": "Approved for advisory responses in Freshdesk"
+    }
+  ]
+}
