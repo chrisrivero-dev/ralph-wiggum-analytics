@@ -2,6 +2,9 @@ from flask import Blueprint, jsonify
 
 from ralph.models import ConfidenceCalibration
 from ralph.analytics.intent_coverage import detect_uncovered_intents
+from ralph.analytics.guardrail_validation import detect_missing_guardrails
+from ralph.analytics.decision_log_validation import detect_missing_decisions
+
 
 insights_bp = Blueprint("insights", __name__, url_prefix="/insights")
 
@@ -16,8 +19,6 @@ def intent_coverage():
     insights = detect_uncovered_intents()
     return jsonify(insights), 200
 
-from ralph.analytics.guardrail_validation import detect_missing_guardrails
-
 
 @insights_bp.route("/guardrails", methods=["GET"])
 def guardrail_validation():
@@ -28,6 +29,18 @@ def guardrail_validation():
     """
     insights = detect_missing_guardrails()
     return jsonify(insights), 200
+
+
+@insights_bp.route("/decision-log", methods=["GET"])
+def decision_log_validation():
+    """
+    Governance insight:
+    Detect intents missing explicit human approval decisions.
+    Advisory only.
+    """
+    insights = detect_missing_decisions()
+    return jsonify(insights), 200
+
 
 @insights_bp.route("/calibrations", methods=["GET"])
 def get_calibrations():
